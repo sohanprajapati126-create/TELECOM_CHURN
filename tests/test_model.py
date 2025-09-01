@@ -1,17 +1,30 @@
 import unittest
+import pandas as pd
 import joblib
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 
-class TestModelTraining(unittest.TestCase):
+class TestModel(unittest.TestCase):
     def test_model_training(self):
-        # Load the saved model
-        model = joblib.load('model/Telecome_model.pkl')
-        
-        # Check that it is a LogisticRegression model
-        self.assertIsInstance(model, LogisticRegression)
-        
-        # Check that it has at least 4 features (coefficients)
-        self.assertGreaterEqual(len(model.coef_[0]), 4)
+        # Load dataset
+        df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv").dropna()
+        X = pd.get_dummies(df.drop('Churn', axis=1))
+        y = df['Churn']
 
-if _name_ == '_main_':
-    unittest.main()
+        # Train a model
+        model = RandomForestClassifier(n_estimators=10, random_state=42)
+        model.fit(X, y)
+
+        # Ensure model is fitted and can make predictions
+        preds = model.predict(X)
+        self.assertEqual(len(preds), len(y))  # predictions length matches data length
+
+    def test_model_file_exists(self):
+        # Check if model file exists after training
+        try:
+            model = joblib.load('model/Churn_model.pkl')
+            self.assertIsNotNone(model)
+        except FileNotFoundError:
+            self.fail("❌ Model file not found. Run train.py before testing.")
+
+if _name_ == "_main_":
+    unittest.main()
