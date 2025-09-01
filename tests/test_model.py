@@ -26,5 +26,5 @@ class TestModel(unittest.TestCase):
         except FileNotFoundError:
             self.fail("❌ Model file not found. Run train.py before testing.")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     unittest.main()
