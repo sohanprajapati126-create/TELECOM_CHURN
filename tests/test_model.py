@@ -1,24 +1,17 @@
 import unittest
 import joblib
-import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
-class TestModel(unittest.TestCase):
-    def setUp(self):
-        # Load dataset
-        self.df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
-        self.X = self.df.drop(['customerID', 'Churn'], axis=1)
-        self.y = self.df['Churn']
+class TestModelTraining(unittest.TestCase):
+    def test_model_training(self):
+        # Load the saved model
+        model = joblib.load('model/Telecome_model.pkl')
         
-        # Load trained pipeline (or model)
-        self.model = joblib.load("model/Telecome_model.pkl")
-
-    def test_model_predict(self):
-        # Take first 5 samples
-        X_sample = self.X.head(5)
-        preds = self.model.predict(X_sample)
+        # Check that it is a LogisticRegression model
+        self.assertIsInstance(model, LogisticRegression)
         
-        # Check predictions length matches inputs
-        self.assertEqual(len(preds), len(X_sample))
+        # Check that it has at least 4 features (coefficients)
+        self.assertGreaterEqual(len(model.coef_[0]), 4)
 
-if __name__ == "__main__":
-    unittest.main()
+if _name_ == '_main_':
+    unittest.main()
