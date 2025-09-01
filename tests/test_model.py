@@ -1,3 +1,4 @@
+!pip install unittest
 import unittest
 import joblib
 from sklearn.ensemble import RandomForestClassifier
