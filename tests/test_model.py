@@ -1,13 +1,24 @@
-!pip install unittest
 import unittest
 import joblib
-from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
 
-class TestModelTraining(unittest.TestCase):
-	def test_model_training(self):
-        	model = joblib.load('model/Telecome_model.pkl')
-        	self.assertIsInstance(model, RandomForestClassifier)
-       		self.assertGreaterEqual(len(model.feature_importances_), 4)
+class TestModel(unittest.TestCase):
+    def setUp(self):
+        # Load dataset
+        self.df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+        self.X = self.df.drop(['customerID', 'Churn'], axis=1)
+        self.y = self.df['Churn']
+        
+        # Load trained pipeline (or model)
+        self.model = joblib.load("model/Telecome_model.pkl")
 
-if __name__ == '__main__':
+    def test_model_predict(self):
+        # Take first 5 samples
+        X_sample = self.X.head(5)
+        preds = self.model.predict(X_sample)
+        
+        # Check predictions length matches inputs
+        self.assertEqual(len(preds), len(X_sample))
+
+if __name__ == "__main__":
     unittest.main()
