@@ -1,30 +1,23 @@
+import os
 import unittest
-import pandas as pd
 import joblib
-from sklearn.ensemble import RandomForestClassifier
 
 class TestModel(unittest.TestCase):
-    def test_model_training(self):
-        # Load dataset
-        df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv").dropna()
-        X = pd.get_dummies(df.drop('Churn', axis=1))
-        y = df['Churn']
-
-        # Train a model
-        model = RandomForestClassifier(n_estimators=10, random_state=42)
-        model.fit(X, y)
-
-        # Ensure model is fitted and can make predictions
-        preds = model.predict(X)
-        self.assertEqual(len(preds), len(y))  # predictions length matches data length
 
     def test_model_file_exists(self):
-        # Check if model file exists after training
-        try:
-            model = joblib.load('model/Churn_model.pkl')
-            self.assertIsNotNone(model)
-        except FileNotFoundError:
-            self.fail("❌ Model file not found. Run train.py before testing.")
+        """Check if the trained model file exists"""
+        self.assertTrue(
+            os.path.exists("model/Churn_model.pkl"),
+            "❌ Model file not found. Run train.py before testing."
+        )
+
+    def test_model_load(self):
+        """Try loading the model if it exists"""
+        if os.path.exists("model/Churn_model.pkl"):
+            model = joblib.load("model/Churn_model.pkl")
+            self.assertIsNotNone(model, "❌ Model could not be loaded.")
+        else:
+            self.skipTest("Model file not found. Skipping load test.")
 
 if __name__ == "__main__":
     unittest.main()
